@@ -2,7 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Group;
+use App\Models\Lesson;
+use DOMDocument;
 use Illuminate\Console\Command;
+use PhpParser\Node\Stmt\Foreach_;
 
 class Update extends Command
 {

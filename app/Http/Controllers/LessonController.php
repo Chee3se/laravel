@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Lesson;
+
 use Illuminate\Http\Request;
 
-class LessonApiController extends Controller
+class LessonController extends Controller
 {
     public function index()
     {
