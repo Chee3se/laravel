@@ -15,7 +15,7 @@ class Update extends Command
      *
      * @var string
      */
-    protected $signature = 'app:update';
+    protected $signature = 'run:update';
 
     /**
      * The console command description.
