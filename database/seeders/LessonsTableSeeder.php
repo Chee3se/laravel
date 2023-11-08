@@ -1,62 +1,27 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Database\Seeders;
 
-use App\Models\Group;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 use App\Models\Lesson;
+use App\Models\Group;
 use DOMDocument;
-use Illuminate\Console\Command;
-use PhpParser\Node\Stmt\Foreach_;
 
-class Update extends Command
+class LessonsTableSeeder extends Seeder
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * Run the database seeds.
      */
-    protected $signature = 'run:update';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function run(): void
     {
-        //Wipes the whole database (not good)
-        Lesson::query()->delete();
-        Group::query()->delete();
-        //Get a list of every specified element in url
-        function getArray($link, $element) {
-            $html = file_get_contents('http://pt.edu.lv/pt/stundas.php'.$link);
+        $groups = Group::all();
+        foreach ($groups as $group) {
+            $html = file_get_contents('http://pt.edu.lv/pt/stundas.php?id=m&g='.$group['name']);
             $html = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $html);
             $DOM = new DOMDocument();
             @$DOM->loadHTML($html);
-            $links = $DOM->getElementsByTagName($element);
-            return $links;
-        }
-        //Group getting
-        $id = 1;
-        $foundGroups = getArray('', 'a');
-        foreach ($foundGroups as $link) {
-            $href = $link->getAttribute('href');
-            if (preg_match('/\?id=m&g=([^&]+)/', $href, $matches)) {
-                $groupName = $matches[1];
-                Group::create(['name' => $new_group]);
-            }
-            $id++;
-        }
-        //Lesson getting
-        $id = 1;
-        $groups = Group::all();
-        foreach ($groups as $group) {
-            $foundLessons = getArray('?id=m&g='.$group['name'], 'td');
+            $foundLessons = $DOM->getElementsByTagName('td');
             $day = 0;
             $lesson = ':/';
             $teacher = ':/';
@@ -92,7 +57,6 @@ class Update extends Command
                                         'teacher' => $teacher,
                                     ]);
                                     $count = 0;
-                                    $id++;
                                 } else {
 
                                     $lesson = $text;
@@ -108,7 +72,6 @@ class Update extends Command
                                     'teacher' => $text,
                                 ]);
                                 $count = 0;
-                                $id++;
                             }
 
                         }
@@ -121,9 +84,5 @@ class Update extends Command
                 }
             }
         }
-        //Solution: just update lol
-        /*
-
-        */
     }
 }
